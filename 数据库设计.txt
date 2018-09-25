@@ -1,0 +1,25 @@
+博客后台分析：
+一、前台功能：
+	登陆、注册、导航、文章列表、文章详情、投稿、搜索、评论
+
+二、后台功能
+	登陆、注册、导航管理、文章管理、管理员管理、会员管理、评论管理、系统设置
+
+三、数据库设计 tp5
+	管理员表：tp_admin
+		自增id、用户名username、密码password、昵称nickname、邮箱email、状态status、超管super、添加时间create_time、更新时间update_time、软删除delete_time
+	
+	会员表：tp5_member
+		自增id、用户名username、密码password、昵称nickname、邮箱email、注册时间create_time、更新时间update_time、软删除delete_time
+	
+	导航表：tp_cate
+		自增id、导航名称catename、排序sort、注册时间create_time、更新时间update_time、软删除delete_time
+
+	文章表：tp_article
+		自增id、文章标题title、概要decs、标签tags、内容content、推荐is_top、所属导航cate_id、添加时间create_time、更新时间update_time、软删除delete_time
+
+	评论表：tp_comment
+		自增id、评论内容content、评论文章article_id、评论用户member_id、评论时间create_time、修改时间update_time、软删除delete_time
+	
+	系统设置表：tp_system
+		自增id、网站名字webname、版权信息copyright、设置时间create_time、更新时间update_time、软删除delete_time
