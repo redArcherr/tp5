@@ -43,7 +43,7 @@ class Admin extends Model
         }
         $result=$this->allowField(true)->save($data);//只插入数据库中有的字段
         if($result){
-            mailSend($data['email'],'注册成功！','恭喜注册成功验证码是');
+            //mailSend($data['email'],'注册成功！','恭喜注册成功验证码是');
             return 1;
         }else{
             return $this->error('注册失败！');
@@ -71,5 +71,25 @@ class Admin extends Model
             return '重置密码失败';
         }
 
+    }
+
+    //修改
+    public function edit($data){
+        $validate=new \app\common\validate\Admin();
+        if(!$validate->scene('edit')->check($data)){
+            return $validate->getError();
+        }
+        $adminInfo=$this->find($data['id']);
+        if($data['oldpass']!=$adminInfo['password']){
+            return '旧密码不正确';
+        }
+        $adminInfo->nickname=$data['nickname'];
+        $adminInfo->password=$data['newpass'];
+        $result=$adminInfo->save();
+        if($result){
+            return 1;
+        }else{
+            return '用户修改失败';
+        }
     }
 }

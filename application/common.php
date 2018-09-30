@@ -42,3 +42,8 @@ function mailSend($to,$title,$content){
         exception($mail->ErrorInfo,1001);
     }
 }
+
+//把span换成a标签
+function replace($data){
+    return str_replace('span','a',$data);
+}

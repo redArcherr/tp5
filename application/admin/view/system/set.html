@@ -1,0 +1,103 @@
+{include file="public/_head" /}
+<!-- /Navbar -->
+<!-- Main Container -->
+<div class="main-container container-fluid">
+    <!-- Page Container -->
+    <div class="page-container">
+
+        <!-- Page Sidebar -->
+        {include file="public/_left" /}
+        <!-- /Page Sidebar -->
+        <!-- Page Content -->
+        <div class="page-content">
+            <!-- Page Breadcrumb -->
+            <div class="page-breadcrumbs">
+                <ul class="breadcrumb">
+                    <li class="active">
+                        <i class="fa fa-home"></i>&nbsp;系统管理
+                    </li>
+                    <li>
+                        系统管理
+                    </li>
+                </ul>
+            </div>
+            <!-- /Page Breadcrumb -->
+            <!-- Page Body -->
+            <div class="page-body">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <div class="widget radius-bordered">
+                            <div class="widget-header bordered-bottom bordered-themeprimary">
+                                <span class="widget-caption">系统管理</span>
+                            </div>
+                            <div class="widget-body">
+                                <form class="form-horizontal">
+                                    <input type="hidden" name="id" value="{$system.id}">
+                                    <div class="form-group">
+                                        <label for="webname" class="col-sm-2 control-label no-padding-right">网站标题</label>
+                                        <div class="col-sm-6">
+                                            <input type="text" class="form-control" id="webname" name="webname" placeholder="网站标题" value="{$system.webname}"/>
+                                            <p class="help-block">请输入网站标题</p>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="copyright" class="col-sm-2 control-label no-padding-right">网站版权信息</label>
+                                        <div class="col-sm-6">
+                                            <input type="text" class="form-control" id="copyright" name="copyright" placeholder="网站版权信息" value="{$system.copyright}"/>
+                                            <p class="help-block">请输入网站版权信息</p>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <div class="col-sm-offset-2 col-sm-10">
+                                            <button type="submit" class="btn btn-primary" id="systemSet">修改</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- /Page Body -->
+        </div>
+        <!-- /Page Content -->
+
+    </div>
+    <!-- /Page Container -->
+    <!-- Main Container -->
+
+</div>
+{include file="public/_js" /}
+<script>
+    $(function () {
+       $('#systemSet').click(function () {
+           $.ajax({
+               url:"{:url('admin/system/set')}",
+               data:$('form').serialize(),
+               type:'post',
+               dataType:'json',
+               success:function (data) {
+                   if(data.code==1){
+                       layer.msg(data.msg,{
+                           icon:6,
+                           time:1000
+                       },function () {
+                           location.href=data.url;
+                       });
+                   }else{
+                       layer.open({
+                           icon:5,
+                           anim:6,
+                           title:'编辑系统信息',
+                           content:data.msg
+                       });
+                   }
+               }
+           });
+           return false;
+       });
+    });
+</script>
+</body>
+<!--  /Body -->
+</html>

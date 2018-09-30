@@ -6,6 +6,14 @@ use think\Controller;
 
 class Index extends Controller
 {
+    //判断是否登陆过
+    public function initialize()
+    {
+        if(session('?admin.id')){
+            $this->redirect('admin/home/index');
+        }
+    }
+
     //后台登陆试试git
     public function login()
     {
