@@ -1,4 +1,5 @@
 {include file='public/_head' /}
+<link href="/static/bootsfileup/css/fileinput.css" rel="stylesheet" />
 <!-- /Navbar -->
 <!-- Main Container -->
 <div class="main-container container-fluid">
@@ -29,11 +30,17 @@
                                 <span class="widget-caption">文章添加</span>
                             </div>
                             <div class="widget-body">
-                                <form action="" class="form-horizontal">
+                                <form id='father' action="" class="form-horizontal">
                                     <div class="form-group">
                                         <label for="title" class="control-label col-sm-2">文章标题</label>
                                         <div class="col-sm-6">
                                             <input type="text" class="form-control" id="title" name="title" placeholder="文章标题" />
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="author" class="control-label col-sm-2">作者</label>
+                                        <div class="col-sm-6">
+                                            <input type="text" class="form-control" id="author" name="author" placeholder="作者" />
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -63,12 +70,21 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
+                                        <div id="rootImg" class="col-sm-offset-2 col-sm-6">
+                                            <button class="btn btn-success" id="upImg">上传图片</button>
+                                        </div>
+                                    </div>
+                                    <div id="showImgPage">
+                                        <button class="closeImgPage" id="closeImgPage">X</button>
+                                        <input type="file" name="uploadfile" id="file-0" multiple class="file-loading" />
+                                    </div>
+                                    <div class="form-group">
                                         <label for="desc" class="control-label col-sm-2">文章描述</label>
                                         <div class="col-sm-6">
                                             <textarea name="desc" id="desc" cols="30" rows="5" class="form-control"></textarea>
                                         </div>
                                     </div>
-                                    <div class="form-group">
+                                    <div class="form-group" >
                                         <label for="content" class="control-label col-sm-2">文章内容</label>
                                         <div class="col-sm-6">
                                             <textarea name="content" id="content" cols="30" rows="10" class=""></textarea>
@@ -98,36 +114,171 @@
 {include file='public/_js' /}
 <script src="/static/lib/ueditor/ueditor.config.js"></script>
 <script src="/static/lib/ueditor/ueditor.all.js"></script>
+<script src="/static/bootsfileup/js/fileinput.js"></script>
+<script src="/static/bootsfileup/js/locales/zh.js"></script>
 <script>
     $(function () {
+       //存放图片的数组和记录个数
+       var upImg=new Array(),imgNumb=0;
+       //初始化百度富文本
        UE.getEditor('content');
+       //上传图片初始化
+       initFileInput("file-0","{:url('admin/article/upImg')}");
+       //添加按钮
        $('#add').click(function () {
-          $.ajax({
-              url:"{:url('admin/article/add')}",
-              data:$('form').serialize(),
-              type:'post',
-              dataType:'json',
-              success:function (data) {
-                  if(data.code==1){
-                      layer.msg(data.msg,{
-                          icon:6,
-                          time:1000
-                      },function () {
-                          location.href=data.url;
-                      });
-                  }else{
-                      layer.open({
-                          title:'文章添加',
-                          content:data.msg,
-                          icon:5,
-                          anim:6
-                      });
-                  }
-              }
-          });
+           if( countImgs(upImg)){
+               $.ajax({
+                   url:"{:url('admin/article/add')}",
+                   data:$('form').serialize(),
+                   type:'post',
+                   dataType:'json',
+                   success:function (data) {
+                       if(data.code==1){
+                           layer.msg(data.msg,{
+                               icon:6,
+                               time:1000
+                           },function () {
+                               location.href=data.url;
+                           });
+                       }else{
+                           layer.open({
+                               title:'文章添加',
+                               content:data.msg,
+                               icon:5,
+                               anim:6
+                           });
+                       }
+                   }
+               });
+           }
           return false;
        });
+
+        //点击上传图片按钮显示选择图片页
+        $("#upImg").click(function () {
+            $("#showImgPage").fadeIn('fast');
+            return false;
+        });
+
+        //监听上传完成事件(上传)
+        $("#file-0").on("fileuploaded", function(event, data, previewId, index) {
+            //放到数组
+            upImg.push(data.response.path);
+            imgNumb++;
+            imgNumbSate(imgNumb);
+            makeMinImg(data.response.path);
+            console.log(upImg);
+        });
+        //删除缩略图(动态生成的元素无法用这种方式阻止冒泡)(删除)
+        $("#rootImg").on('click', 'button', function (event) {
+            var imgNode=event.target.parentNode.firstChild;
+            var index=upImg.indexOf(imgNode.iid);
+            imgNumb--;
+            imgNumbSate(imgNumb);
+            upImg.splice(index,1);
+            console.log(upImg);
+            event.target.parentNode.remove();
+            return false;
+        });
+        //隐藏上传窗口
+        $("#showImgPage").hide();
+
+       //关闭图片选择框
+       $("#closeImgPage").click(function () {
+           $("#showImgPage").fadeOut('fast');
+           return false;
+       });
+
     });
+    
+    //上传文件
+    function initFileInput(ctrlName,uploadUrl) {
+        var control = $('#'+ctrlName);
+        control.fileinput({
+            language:'zh',
+            uploadUrl:uploadUrl,
+            allowedFileExtensions:['jpg','png','gif','jpeg'],
+            // uploadAsync: false,
+            showUpload:true,
+            showCaption:true,
+            showPreview:true,
+            showRemove:true,
+            showClose:false,
+            browseClassL:'btn btn-primary',
+            previewFileIcon:"<i class='glyphicon glyphicon-king'></i>",
+            maxFileCount:2,
+            dropZoneEnabled:true,
+            msgFilesTooMany: "选择上传的文件数量({n}) 超过允许的最大数值{m}！",
+            // enctype:'multipart/form-data',
+            initialPreviewConfig:{
+                caption:ctrlName,
+                width:'120px',
+                url:uploadUrl,
+                key:101,
+                success:function () {
+
+                }
+            }
+        });
+    }
+    
+    //创建显示缩略图组件
+    function makeMinImg(data) {
+        var rootImg=document.getElementById('rootImg');
+        var imgdiv=document.createElement('div');
+        var img=document.createElement('img');
+        var closebtn=document.createElement('button');
+        imgdiv.classList.add('imgdiv');
+        closebtn.classList.add('closeMinImg');
+        closebtn.innerText='X';
+        img.src=data;
+        img.iid=data;
+        img.classList.add('ltn_minImg');
+        imgdiv.appendChild(img);
+        imgdiv.appendChild(closebtn);
+        rootImg.appendChild(imgdiv);
+    }
+    //根据imgNumb监控按钮状态的回调
+    function imgNumbSate(data) {
+        if(data>=0 && data<2){
+            $("#upImg").attr('disabled',false);
+        }else{
+            $("#upImg").attr('disabled',true);
+        }
+    }
+
+    //删除文件(暂时没用)
+    function delImg(data) {
+        var fso,f,url="/static/upimg/2018-10-25/5bd17562dbe06.jpg";
+        fso=new ActiveXObject("Scripting.FileSystemObject");
+        f=fso.GetFile(url);
+        f.Delete();
+    }
+
+    //统计上传的图片组装在input里提交给后台
+    function countImgs(data) {
+        var imgs,input,rootImg;
+        rootImg=document.getElementById('father')
+        input=document.createElement('input');
+        if(data.length>0){
+            for (var i=0;i<data.length;i++){
+                if(imgs==undefined){
+                    imgs=data[i]+"|";
+                }else {
+                    imgs+=data[i];
+                }
+            }
+        }else{
+            imgs=''+'|'+'';
+        }
+        input.type='hidden';
+        input.name='imgs';
+        input.value=imgs;
+        rootImg.appendChild(input);
+        return true;
+    }
+
+
 </script>
 
 

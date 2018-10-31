@@ -47,3 +47,8 @@ function mailSend($to,$title,$content){
 function replace($data){
     return str_replace('span','a',$data);
 }
+
+//根据特殊字符截取字符返回数组
+function strToArray($data){
+    return explode('|',$data);
+}

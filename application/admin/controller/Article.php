@@ -1,6 +1,7 @@
 <?php
 
 namespace app\admin\controller;
+use \org\Upload;
 
 class Article extends Base
 {
@@ -17,13 +18,18 @@ class Article extends Base
     //文章添加
     public function add(){
         if(request()->isAjax()){
+            $imgs=input('post.imgs');
+            $imgArray=explode('|',$imgs);
             $data=[
                 'title'=>input('post.title'),
+                'author'=>input('post.author'),
                 'tags'=>input('post.tags'),
                 'is_top'=>input('post.is_top',0),
                 'cate_id'=>input('post.cate_id'),
                 'desc'=>input('post.desc'),
                 'content'=>input('post.content'),
+                'img1'=>$imgArray[0],
+                'img2'=>$imgArray[1]
             ];
             $result=model('Article')->add($data);
             if($result==1){
@@ -59,14 +65,19 @@ class Article extends Base
     //文章编辑
     public function edit(){
         if(request()->isAjax()){
+            $imgs=input('post.imgs');
+            $imgArray=explode('|',$imgs);
             $data=[
                 'id'=>input('post.id'),
                 'title'=>input('post.title'),
+                'author'=>input('post.author'),
                 'tags'=>input('post.tags'),
                 'is_top'=>input('post.is_top',0),
                 'cate_id'=>input('post.cate_id'),
                 'desc'=>input('post.desc'),
                 'content'=>input('post.content'),
+                'img1'=>$imgArray[0],
+                'img2'=>$imgArray[1]
             ];
             $result=model('Article')->edit($data);
             if($result==1){
@@ -96,6 +107,28 @@ class Article extends Base
             }else{
                 $this->error('文章删除失败');
             }
+        }
+    }
+
+    //上传图片测试 upload扩展https://github.com/top-think/thinkphp-extend
+    //这里记得设置上传驱动
+    public function upImg(){
+        $upload = new \org\Upload();
+        $upload->maxSize = 3145728;
+        $upload->exts = array('jpg','gif','png','jpeg');
+        $upload->rootPath = './static/upimg/';
+        $info = $upload->upload();
+        if(!$info){
+            $this->error($upload->getError());
+        }else{
+            $nameId=substr($info['uploadfile']['savename'],0,strpos($info['uploadfile']['savename'], '.'));
+            $data=[
+                'imgId'=>$nameId,
+                'path'=>'/static/upimg/'.$info['uploadfile']['savepath'].$info['uploadfile']['savename']
+            ];
+            echo json_encode($data);
+            //$this->success('上传成功！');
+
         }
     }
 }

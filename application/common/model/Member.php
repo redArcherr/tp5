@@ -49,4 +49,42 @@ class Member extends Model
             return '修改失败';
         }
     }
+
+    //注册
+    public function register($data){
+        $validate=new \app\common\validate\Member();
+        if(!$validate->scene('register')->check($data)){
+            return $validate->getError();
+        }
+
+        $result=$this->allowField(true)->save($data);
+        if($result){
+            return 1;
+        }else{
+            return '注册失败';
+        }
+
+    }
+
+    //登陆
+    public function login($data){
+        $validate=new \app\common\validate\Member();
+        if(!$validate->scene('login')->check($data)){
+            return $validate->getError();
+        }
+        unset($data['verify']);
+
+        $result=$this->where($data)->find();
+        if($result){
+            $sessionData=[
+                'id'=>$result['id'],
+                'nickname'=>$result['nickname'],
+            ];
+            session('index',$sessionData);
+            return 1;
+        }else{
+            return '用户名或密码错误';
+        }
+
+    }
 }

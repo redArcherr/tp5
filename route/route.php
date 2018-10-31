@@ -8,7 +8,16 @@
 // +----------------------------------------------------------------------
 // | Author: liu21st <liu21st@gmail.com>
 // +----------------------------------------------------------------------
-
+//前台路由
+Route::rule('cate/:id','index/index/index','get');
+Route::rule('/','index/index/index','get');
+Route::rule('article-<id>','index/article/info','get');
+Route::rule('register','index/index/register','get|post');
+Route::rule('login','index/index/login','get|post');
+Route::rule('loginout','index/index/loginout','post');
+Route::rule('search','index/index/search','get');
+Route::rule('comment','index/article/comm','post');
+//后台路由
 Route::group('admin',function (){
     Route::rule('/','admin/index/login','get|post');
     Route::rule('register','admin/index/register','get|post');
@@ -23,6 +32,7 @@ Route::group('admin',function (){
     Route::rule('catedel/[:id]','admin/cate/del','get|post');//中括号代表可选参数,去掉中括号就必填
     Route::rule('articlelist','admin/article/list','get');
     Route::rule('articleadd','admin/article/add','get|post');
+    Route::rule('articleupfile','admin/article/upImg','get|post');
     Route::rule('articletop','admin/article/top','post');
     Route::rule('articleedit/[:id]','admin/article/edit','get|post');
     Route::rule('articledel/[:id]','admin/article/del','post');
@@ -39,3 +49,8 @@ Route::group('admin',function (){
     Route::rule('commentdel','admin/comment/del','post');
     Route::rule('set','admin/system/set','get|post');
 });
+
+Route::group('api',function (){
+    Route::rule('adminlist','api/index/list','get');
+    Route::rule('articlelist','api/article/list','get');
+})->allowCrossDomain();//结尾解决跨域

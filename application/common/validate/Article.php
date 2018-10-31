@@ -15,6 +15,7 @@ class Article extends Validate
 {
     protected $rule=[
         'title|文章标题'=>'require|unique:article',
+        'author|作者'=>'require',
         'tags|文章标签'=>'require',
         'desc|文章描述'=>'require',
         'content|文章内容'=>'require',
@@ -24,7 +25,7 @@ class Article extends Validate
 
     //添加场景
     public function sceneAdd(){
-        return $this->only(['title','tags','desc','content','cate_id']);
+        return $this->only(['title','tags','desc','content','cate_id','author']);
     }
 
     public function sceneTop(){
@@ -32,7 +33,7 @@ class Article extends Validate
     }
 
     public function sceneEdit(){
-        return $this->only(['tags','desc','content','cate_id','title','is_top']);
+        return $this->only(['tags','desc','content','cate_id','title','is_top','author']);
     }
 
 }

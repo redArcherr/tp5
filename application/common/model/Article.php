@@ -57,11 +57,14 @@ class Article extends Model
         }
         $article=$this->find($data['id']);
         $article->title=$data['title'];
+        $article->author=$data['author'];
         $article->tags=$data['tags'];
         $article->is_top=$data['is_top'];
         $article->cate_id=$data['cate_id'];
         $article->desc=$data['desc'];
         $article->content=$data['content'];
+        $article->img1=$data['img1'];
+        $article->img2=$data['img2'];
         $result=$article->allowField(true)->save();
         if($result){
             return 1;
